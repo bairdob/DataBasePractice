@@ -2,12 +2,10 @@
 psql postgresql://postgres@localhost<< EOF
 DO \$\$
 DECLARE
-
     emp_salary hr_poc1.Employees_copy.salary%TYPE;
     v_sum_salary hr_poc1.Employees_copy.salary%TYPE:=1;
     emp_rating hr_poc1.Employees_copy.rating_e%TYPE;
     rating hr_poc1.Employees_copy.rating_e%TYPE;
-
 BEGIN
     -- получаем сумму продаж интервала сотрудников
     SELECT SUM(salary) INTO v_sum_salary
