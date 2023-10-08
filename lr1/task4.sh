@@ -39,10 +39,7 @@ BEGIN
             SET salary = salary + salary_increase
             WHERE employee_id = i;
         END IF;
-
-        
     END LOOP;
-
 
     RAISE NOTICE'start % end %', emp_start, emp_end;
 
