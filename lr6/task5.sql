@@ -1,28 +1,23 @@
-CREATE OR REPLACE FUNCTION prevent_table_deletion()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION hr_poc1.prevent_table_deletion()
+ RETURNS EVENT_TRIGGER
+ LANGUAGE plpgsql
+AS $function$
 DECLARE
     current_time TIME;
+    v_type text;
+    v_name text;
 BEGIN
-    -- Получение текущего времени
+    SELECT object_name, object_type into v_name,v_type
+    FROM pg_event_trigger_dropped_objects();
+    
     SELECT current_time INTO current_time;
 
-    -- Проверка времени (запрет удаления после 18:00)
-    IF current_time >= '18:00:00' THEN
+    IF v_type = 'table' AND current_time >= '18:00:00' then
         RAISE EXCEPTION 'Запрещено удалять таблицы после 18:00.';
-    ELSE
-        RETURN OLD;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$function$;
 
--- Привязка триггера ко всем таблицам в схеме hr_poc1
-DO $$ 
-DECLARE 
-    table_name text;
-BEGIN 
-    FOR table_name IN (SELECT table_name FROM information_schema.tables WHERE table_schema = 'hr_poc1') 
-    LOOP 
-        EXECUTE 'CREATE TRIGGER prevent_table_deletion_trigger BEFORE DROP ON hr_poc1.' || table_name || ' FOR EACH STATEMENT EXECUTE FUNCTION prevent_table_deletion();'; 
-    END LOOP; 
-END $$;
-
+CREATE EVENT TRIGGER prevent_table_deletion_trigger
+ON SQL_DROP
+EXECUTE FUNCTION prevent_table_deletion();
