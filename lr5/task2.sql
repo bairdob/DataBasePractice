@@ -28,6 +28,7 @@ BEGIN
         SELECT credit_limit INTO v_credit_limit
         FROM hr_poc1.customers
         WHERE customer_id = v_customer_id;
+         RAISE NOTICE 'Customer ID %: Cумма продаж=%', v_customer_id, v_summ;
 
         -- Обновляем кредитный лимит в зависимости от условий
         IF v_summ > p_summ_max THEN
